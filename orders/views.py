@@ -539,7 +539,7 @@ def ordr_payment(request,check):
     payment.save()
     return render(
             request,
-            "razorpymnt.html",
+            "orders/razorpymnt.html",
             {
                 "callback_url": "http://" + "127.0.0.1:8000" + "/orders/razorpay/callback/",
                 "razorpay_key": settings.RAZOR_KEY_ID,
