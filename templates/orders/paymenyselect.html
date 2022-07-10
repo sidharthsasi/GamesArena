@@ -642,7 +642,6 @@
 <div id="paypal-button-container"></div>
             
 <script>
-console.log("ivide indooo")
 function getCookie(name) {
 let cookieValue = null;
 if (document.cookie && document.cookie !== '') {
@@ -661,14 +660,10 @@ return cookieValue;
 
 var csrftoken = getCookie('csrftoken');
 var total = '{{ total }}'
-var url = '{% url 'payments' %}'
-var orderID = '{{orders.order_number}}'       
+var url = '{% url 'confirm_order' %}'
+var orderID = '{{order_data.order_number}}'       
 var payment_method= 'Paypal'
 
-console.log(orderID)
-console.log("iufhiufhsiduhiushfhhhjsjjjdjjfsjaghuisgiabvasgis")
-
-console.log(total)
 
 
 
@@ -690,7 +685,7 @@ purchase_units: [{
 // Finalize the transaction after payer approval
 onApprove: (data, actions) => {
 return actions.order.capture().then(function(orderData) {
-	console.log(orderID)
+
 console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
 
 const transaction = orderData.purchase_units[0].payments.captures[0];
@@ -715,20 +710,25 @@ function sendData(){
                               }),
                             })
                             .then(response => response.json())
-                            .then((data) => {
-                              console.log("hoiahohqowahiu")
-							  window.location.href = '/orders/ordercomplete' + '?order_number='+{{orders.order_number}}+'&payment_id='+orderData.id;
-                                                
-							});
-                            }
-                            
+                            .then(data => {
+                              console.log('Success:', data);
+                              window.location.href = window.location.origin + '/orders/paymentsuccessfull/'
+                              console.log(window.location)
+                            })
+                            .catch((error) => {
+                              console.error('Error:', error);
 
+                            }); 
+
+}
 
 });
 }
 }).render('#paypal-button-container');
+</script>
 
 </script> 
+
 
 
 

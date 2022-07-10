@@ -264,7 +264,7 @@ def confirm_order(request):
 
     print('sathyam paray')
     print(total)
-
+    
     global val
     val = request.POST.get("address")
     print(val)
@@ -309,7 +309,7 @@ def confirm_order(request):
 
 
             context = {
-                       
+                        
                         'total' : total,
                         'val': val,
                         'cart_items' : cart_items,
@@ -685,7 +685,7 @@ def razorpay_success(request):
             order_id = request.session.get('order_id')
             print(order_id)
  
-            Order = order.objects.get(order_number = order_id)
+            Order = order.objects.filter(order_number = order_id) #get changed to filter
             cart_items = CartItemm.objects.filter(user=user)
         
             payment = Payment()
@@ -732,7 +732,7 @@ def paymentsuccessfull(request):
     order_id = request.session.get('order_id')
     print(order_id)
     order_product = OrderProduct.objects.filter(user=request.user , order_id = order_id)
-
+    print("1234567890")
     cart_itm = cart_item
     Order = order.objects.get(order_number = order_id)
     print(cart_itm)

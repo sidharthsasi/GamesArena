@@ -26,6 +26,21 @@
 
 	<!-- Shoping Cart -->
 
+	{% if not cart_items  %}
+	<div class="d-flex p-3 px-5">
+	<div style="width:;"><img style="margin-left:auto; display-flex justify-content: center;" src="https://i.pinimg.com/736x/2e/ac/fa/2eacfa305d7715bdcd86bb4956209038--android.jpg" alt=""></div>
+	
+	<div class="one mt-5 mx-5 ">
+	  
+	<h2>Your Cart is empty</h2>
+	<br>
+	<div class="text-center">
+	   <a href="{% url 'home' %}" class="btn btn-primary pt-3 pb-3" style="border-radius:20px;">Continue Shopping</a>
+	</div>
+	</div>
+	</div>
+	
+	{% else%}
 
 	<form class="bg0 p-t-75 p-b-85">
 		<div class="container">
@@ -249,6 +264,7 @@
 
 
 
+		{% endif %}
 
 
 
