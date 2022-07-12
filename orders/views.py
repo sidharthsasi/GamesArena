@@ -348,7 +348,7 @@ def confirm_order(request):
        
             return render(request,'orders/address.html',context)
 
-        
+    
 
 # def paymntslct(request):
 #     adrs = UserProfile.objects.filter(user=request.user)
