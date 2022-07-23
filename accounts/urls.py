@@ -23,6 +23,6 @@ urlpatterns = [
     path('returnordr/<int:id>',views.returnordr,name='returnordr'),
     path('edituserprfl/',views.edituserprfl,name='edituserprfl'),
     path('changpswrd/',views.changpswrd,name='changpswrd'),
-    path('deleteaddress/',views.deleteaddress,name='deleteaddress'),
+    path('deleteaddress/<int:id>',views.deleteaddress,name='deleteaddress'),
    
 ]

@@ -660,7 +660,7 @@ return cookieValue;
 
 var csrftoken = getCookie('csrftoken');
 var total = '{{ total }}'
-var url = '{% url 'confirm_order' %}'
+var url = '{% url 'place_order' %}'
 var orderID = '{{order_data.order_number}}'       
 var payment_method= 'Paypal'
 

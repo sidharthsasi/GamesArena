@@ -22,7 +22,7 @@
         <tbody class="table-border-bottom-0">
             {% for order in ordr %}
           <tr>
-            <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{order.id}}</strong></td>
+            <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{forloop.counter}}</strong></td>
             <td>{{order.full_name}}</td>
 
             <td>
@@ -55,34 +55,39 @@
          
 <td>
            
-              {% if  order.status   %}
+              
               <div class="dropdown">
+                {% if  order.status == "Confirmed"   %}
                 <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                   status
                 </a>
    
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <a class="dropdown-item" href="/admins/ordrctrl/{{order.id}}/Confirmed" value ="">Confirmed</a>
-              <a class="dropdown-item" href="/admins/ordrctrl/{{order.id}}/Accepted" value="">Accepted</a>
-              <a class="dropdown-item" href="/admins/ordrctrl/{{order.id}}/Completed" value ="">Completed</a>
-              <a class="dropdown-item" href="/admins/ordrctrl/{{order.id}}/Cancelled" value ="">Cancelled</a>
+             
+              <a class="dropdown-item" href="/admins/ordrctrl/{{order.id}}/Accepted" hx-target="#hey" hx-swap="innerHTML" value="">Accepted</a>
+              <a class="dropdown-item" href="/admins/ordrctrl/{{order.id}}/Completed" hx-target="#hey" hx-swap="innerHTML" value ="">Completed</a>
+              <a class="dropdown-item" href="/admins/ordrctrl/{{order.id}}/Cancelled" hx-target="#hey" hx-swap="innerHTML" value ="">Cancelled</a>
             </ul>
             </div>
+            <div class="dropdown-menu">
               {% elif order.status == "Accepted"   %}
-              <button type="button" style="width:110px;" class="btn btn-danger dropdown-toggle mx-4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                Status
-              </button>
-            <div class="dropdown-menu"> 
+              <a class="btn btn-info dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" >
+                {{order.status}}
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+
                <a class="dropdown-item" href="/admins/ordrctrl/{{order.id}}/Completed" value ="Completed">Completed</a>
                <a class="dropdown-item" href="/admins/ordrctrl/{{order.id}}/Cancelled" value ="Cancelled">Cancelled</a>
+              </ul>
+            </div>
               {% elif order.status  == "Completed" %}
               
-              <a class="s mx-4" href="#" value ="Completed"><button  type="button" style="width:110px;" class="btn btn-success btn-block mb-4">Completed</button></a>
+              <a class="btn btn-success " href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Completed</button></a>
               {% elif order.status  == "Cancelled" or order.status  == "cancelled"  %}
            
-              <a class="s mx-4" href="#" value ="Cancelled"><button  type="button" style="width:110px;" class="btn btn-warning btn-block mb-4">Cancelled</button></a>
+              <a class="btn btn-warning " href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Cancelled</button></a>
               {% elif order.status == "Returned"   %}
-              <a class="s mx-4" href="#" value ="Returned"><button  type="button" style="width:110px;" class="btn btn-warning btn-block mb-4">Returned</button></a>
+              <a class="btn btn-danger " href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Returned</button></a>
 
               
               {% endif %}

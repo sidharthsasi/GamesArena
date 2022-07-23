@@ -145,7 +145,7 @@ def place_order(request):
             
             request.session['order_id'] = plc.order_number
 
-       
+    #    paypal start
             order_id = plc.order_number
             orders = order.objects.get(user=plc.user,order_number=order_id)
             print("hiiii")
@@ -153,6 +153,28 @@ def place_order(request):
             adrs=UserProfile.objects.filter(user=request.user)
             print(order_id)
             plc.save()
+
+
+            order_id = order.order_number
+            print("10101010101")
+            print(order_id)
+            print(order.order_number)
+            orders = order.objects.filter(user=user,order_number=order_id)
+            
+            request.session['order_id'] = order.order_number
+            context = {
+                        'order_id' :order_id,
+                        'total' : total,
+                        'order':order,
+                        'cart_items' : cart_items
+                        
+                    }
+            print( total)
+            print(cart_items)
+            
+            return redirect('paypalsuccess')
+
+# end paypal
 
 
             order_data      = order.objects.get(user=request.user, is_ordered=False, order_number=order_id)
@@ -239,6 +261,10 @@ def place_order(request):
                 'adrs': adrs
 
              }
+
+            print("paypal here")
+    
+
             return render (request,'orders/address.html',context)
 
 
@@ -348,7 +374,8 @@ def confirm_order(request):
        
             return render(request,'orders/address.html',context)
 
-    
+          
+ 
 
 # def paymntslct(request):
 #     adrs = UserProfile.objects.filter(user=request.user)
@@ -376,16 +403,17 @@ def address(request):
             first_name = request.POST['fname']
             last_name = request.POST['lname']
             # Phone_number = request.POST['Phone_number']
-            
+            Email = request.POST['email']
             # gender = request.POST['gender']
             # house = request.POST['house']
+            Address1 = request.POST['addres_line_1']
             Address1 = request.POST['addres_line_1']
             Address2 = request.POST['addres_line_2']
             city = request.POST['city']
             state = request.POST['state']
             country = request.POST['country']
             pin = request.POST['pin']
-            pro=UserProfile.objects.create(user=user,first_name=first_name,last_name=last_name,address_line_1=Address1,address_line_2=Address2,city=city,State=state,country=country,pin=pin)
+            pro=UserProfile.objects.create(user=user,first_name=first_name,last_name=last_name,email=Email,address_line_1=Address1,address_line_2=Address2,city=city,State=state,country=country,pin=pin)
             pro.save()
 
             profile = UserProfile.objects.filter(user = user)
@@ -561,7 +589,7 @@ def callback(request):
        
         signature_id = request.POST.get("razorpay_signature", "")
         try:
-            order = Paymentrazor.objects.get(order_id=provider_order_id)
+            order = Paymentrazor.objects.get(order_id = provider_order_id)
         except:
             
             # payment_id = json.loads(request.POST.get("error[metadata]")).get("payment_id")
@@ -619,24 +647,23 @@ def course_changer(request):
 
 def razorpay_success(request):
     user = request.user
-    # print(val)
+   
    
     total = 0
     quantity = 0
-    print('1')
-   
+    
     cart_items = CartItemm.objects.filter(user=user)
     cart_count = cart_items.count()
 
     if (cart_count <= 0):
-        print('2')
+        print('111111')
         return redirect('cart')
     for cart_item in cart_items:
         total += (cart_item.product.offer_price * cart_item.quantity)
         quantity += cart_item.quantity
    
-    if UserProfile.objects.filter(user=request.user).exists():
-            countt =1
+    if UserProfile.objects.filter(user= request.user).exists():
+            count =1
             profile = UserProfile.objects.get(user=request.user)   
             # id=val
             print(profile)
@@ -670,7 +697,7 @@ def razorpay_success(request):
             Order.order_number = order_id_generated
 
             print('6')
-            # request.session['order_id'] = Order.order_number
+            request.session['order_id'] = Order.order_number
 
             Order.save()
 
@@ -678,23 +705,24 @@ def razorpay_success(request):
             print("10101010101")
             print(order_id)
             print(order.order_number)
-            orders = order.objects.get(user=user,order_number=order_id)
+            orders = order.objects.filter(user=user,order_number=order_id)
             
-            # request.session['order_id'] = Order.order_number
-    
+            request.session['order_id'] = Order.order_number
+            print('before')
             order_id = request.session.get('order_id')
             print(order_id)
- 
-            Order = order.objects.filter(order_number = order_id) #get changed to filter
-            cart_items = CartItemm.objects.filter(user=user)
+            print('after')
+            Order = order.objects.get(order_number = order_id) #get changed to filter then changed to get wrking
+            cart_items = CartItemm.objects.filter(user=request.user)
         
             payment = Payment()
             payment.user = user
             payment.payment_id = order_id
+            print(payment.payment_id)
             payment.payment_method = 'RAZORPAY'
-            payment.amount_paid=order.order_total
+            payment.amount_paid=order_total  #Order.order_total changed to order_total
             print("111111111")
-            print(Order.order_total)
+            print(order.order_total)
             payment.status = 'COMPLETED'
             payment.save()
             Order.payment=payment

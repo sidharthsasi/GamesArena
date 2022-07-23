@@ -5,12 +5,14 @@ from multiprocessing import context
 from pickle import FALSE
 from turtle import update
 from unicodedata import category
+from venv import create
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib.auth.models import User 
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from accounts.models import Account
 from accounts.models import Account
 import os
 import datetime
@@ -25,6 +27,8 @@ from django.db.models.functions import TruncDate
 from django.core.paginator import Paginator,EmptyPage
 from carts.models import Coupon
 from jersey.models import Banner
+from django.db.models.functions import ExtractMonth,ExtractDay
+import calendar
 
 # Create your views here.
 
@@ -59,7 +63,7 @@ def admin_signin(request):
 
 
 def admin_user(request):
-    user = Account.objects.all()
+    user = Account.objects.exclude(is_admin =True).order_by('date_joined')
     return render(request,'admins/users.html', {'users':user})
 
     
@@ -149,7 +153,7 @@ def cart(request):
 
 
 def prodedit(request,id):
-    user = Product.objects.get(pk=id)
+    user = Product.objects.get(id=id)
     if request.method =="POST":
         product_name=request.POST.get('name')
         description=request.POST.get('description')
@@ -160,15 +164,26 @@ def prodedit(request,id):
         image2=request.FILES.get('image2')
         image3=request.FILES.get('image3')
         cate = Category.objects.get(category_name = category)
-        user.product_name=product_name
-        user.description=description
-        user.price=price
-        user.stock=stock
+
         user.category_id =cate
-        user.images =image
-        user.images2 =image2
-        user.images3 =image3
-        user.save()
+        if len(product_name)>0:
+            user.product_name=product_name
+        if len(description)>0:    
+            user.description=description
+        if len(price)>0:
+            user.price=price
+        if len(stock)>0:
+            user.stock=stock
+        
+        
+        if len(request.FILES)>0:
+            user.images =image
+       
+            user.images2 =image2
+        
+            user.images3 =image3
+        
+            user.save()
 
         return redirect(admin_product)
     user = Product.objects.get(pk=id)
@@ -247,7 +262,7 @@ def addcat(request):
 
 
 def admordr(request):
-    ordr=order.objects.all()
+    ordr=order.objects.all().order_by('-created_at')
     
     p = Paginator(ordr,15)
 
@@ -552,8 +567,6 @@ def category_offr(request):
 
 
 
-
-
 def edit_catoffr(request,id):
     cat_id =id
     val = request.POST.get("offer")
@@ -572,11 +585,7 @@ def edit_catoffr(request,id):
                 messages.error(request,"Offer must be between 0% to 70%")
                 offr = Category_Offer.objects.get(category_id=cat_id)
                 discount = offr.discount
-                
-
-
                 return render(request,'admins/edit_catoffr.html',{'cat_id':cat_id , 'category':category ,'discount':discount})
-
 
         else:
             offer = request.POST['offers']
@@ -596,16 +605,18 @@ def edit_catoffr(request,id):
         return render(request,'admins/edit_catoffr.html',{'cat_id':cat_id , 'category':category })
 
 
+
+
 def category_offr_disable(request,id):
     
-    cat_off = Category_Offer.objects.get(id=id)
+    cat = Category.objects.get(id=id)
+    cat_off = Category_Offer.objects.get(category = cat)
     print(cat_off)
     if cat_off.active == True:
-        cat_of = Category_Offer.objects.filter(id=id)
-        cat_of.update(active = False)
+        cat_off.active = False
     elif cat_off.active == False:
-        cat_of = Category_Offer.objects.filter(id=id)
-        cat_of.update(active = True)
+        cat_off.active = True
+    cat_off.save()
     return redirect('category_offr')
 
 
@@ -708,6 +719,23 @@ def disable_coupon(request,id):
 
 
 def adm_dashboard(request):
+
+    orderbyday = order.objects.annotate(day=ExtractDay('created_at')).values('day').annotate(count=Count('id'))
+    print(orderbyday)
+    dayday =[]
+    orderperday =[]
+    for o in orderbyday:
+        dayday.append(o['day'])
+        orderperday.append(o['count'])
+    orders = order.objects.annotate(month=ExtractMonth('created_at')).values('month').annotate(count=Count('id')).values('month','count')
+    monthNumber = []
+    totalOrder = []
+    for ord in orders:
+        monthNumber.append(calendar.month_name[ord['month']])
+        totalOrder.append(ord['count'])
+
+
+
     ordr=order.objects.all()
     revenue=0
     orders = OrderProduct.objects.all()
@@ -745,6 +773,10 @@ def adm_dashboard(request):
         'order_count':order_count,
         'revenue':revenue,
         'paymt':paymt,
+        'monthNumber':monthNumber,
+        'totalOrder':totalOrder,
+        'dayday':dayday,
+        'orderperday':orderperday,
         
     }
 
@@ -819,13 +851,3 @@ def hii(request):
 def hoii(request,id,val):
     return render(request,'admins/hooiiii.html')
    
-# product_name = models.CharField(max_length=250, unique=True)
-#     slug         = models.SlugField(max_length=250, unique=True)
-#     description  = models.TextField( max_length=500, blank=True)
-#     price        = models.IntegerField()
-#     images       =models.ImageField(upload_to='photos/product')
-#     stock        = models.IntegerField()
-#     is_available =models.BooleanField(default=True)
-#     category     = models.ForeignKey(Category, on_delete=models.CASCADE)
-#     created_date =models.DateTimeField( auto_now_add=True)
-#     modified_date=models.DateTimeField( auto_now=True)

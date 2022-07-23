@@ -18,7 +18,7 @@
                   You have done <span class="fw-bold">{{order_count}}</span>  sales today. 
                 </p>
 
-                <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a>
+                {% comment %} <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a> {% endcomment %}
               </div>
             </div>
             <div class="col-sm-5 text-center text-sm-left">
@@ -55,8 +55,16 @@
             <div class="col-sm-6 col-xl-3">
                 <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                     <i class="fa fa-chart-line fa-3x text-primary"></i>
-                    <div class="ms-3">
-                        <p class="mb-2">Active users</p>
+                    <div class="avatar flex-shrink-0">
+                        <img
+                          src="https://img.icons8.com/color/2x/user-male-circle--v2.gif"
+                         
+                          class="rounded"
+                        />
+                      </div>
+                      <div class="ms-3">
+                        <p class="mb-2">Active users </p>
+                        
                         <h6 class="mb-0">{{active_users }}</h6>
                     </div>
                 </div>
@@ -65,8 +73,18 @@
             <div class="col-sm-6 col-xl-3">
                 <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                     <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                    
+                    <div class="avatar flex-shrink-0">
+                        <img
+                          src="https://img.icons8.com/color/2x/sale--v3.gif"
+                         
+                          class="rounded"
+                        />
+                      </div>
+
                     <div class="ms-3">
                         <p class="mb-2">Total Sale</p>
+                        
                         <h6 class="mb-0">358</h6>
                     </div>
                 </div>
@@ -75,8 +93,18 @@
             <div class="col-sm-6 col-xl-3">
                 <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                     <i class="fa fa-chart-area fa-3x text-primary"></i>
+                   
+                    <div class="avatar flex-shrink-0">
+                        <img
+                          src="https://img.icons8.com/color/2x/shopping-cart--v2.gif"
+                         
+                          class="rounded"
+                        />
+                      </div>
+
                     <div class="ms-3">
                         <p class="mb-2">Total Orders</p>
+                        
                         <h6 class="mb-0">{{order_count}}</h6>
                     </div>
                 </div>
@@ -85,8 +113,19 @@
             <div class="col-sm-6 col-xl-3">
                 <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                     <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                  
+                    <div class="avatar flex-shrink-0">
+                        <img
+                          src="https://img.icons8.com/color/2x/sales-performance.png"
+                         
+                          class="rounded"
+                        />
+                      </div>
+
                     <div class="ms-3">
                         <p class="mb-2">Total Revenue</p>
+
+                       
                         <h6 class="mb-0">&#x20B9;{{revenue}}</h6>
                     </div>
                 </div>
@@ -120,13 +159,16 @@
                   </div>
                   <canvas id="statusChart"></canvas>
                   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
-                  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.js"></script> -->
-                  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script> -->
-                  <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+                   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.js"></script>
+                   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+                   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                   <script>
                       var xValues =["Completed", "Accepted","Order Confirmed", "Cancelled", "Returned"];
                       var yValues = {{order_status}} ;
                       var barColors = ["green", "blue","yellow","red","brown"];
+
+
+                      
                       
                       new Chart("statusChart", {
                         type: "bar",
@@ -145,6 +187,7 @@
                           }
                         }
                       });
+                      
                       </script>
               </div>
           </div>
@@ -209,47 +252,34 @@
 
 
           
-{% comment %} 
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      
-      <script>
-      const ctx = document.getElementById('myChart1').getContext('2d');
-      const myChart1 = new Chart(ctx, {
-          type: 'bar',
-          data: {
-              labels: ['Completed','Accepted','Pending','cancelled','returned'],
-              datasets: [{
-                  label: 'Order details',
-                  data: {{order_status_list}},
-                  backgroundColor: [
-                      'rgba(251, 99, 132, 0.2)',
-                      'rgba(54, 162, 235, 0.2)',
-                      'rgba(21, 26, 86, 0.2)',
-                      'rgba(75, 192, 192, 0.2)',
-                      'rgba(193, 102, 255, 0.2)',
-                      'rgba(215, 159, 64, 0.2)'
-                  ],
-                  borderColor: [
-                      'rgba(255, 99, 132, 1)',
-                      'rgba(54, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 192, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(255, 159, 64, 1)'
-                  ],
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true
-                  }
-              }
-          }
-      });
-      </script> {% endcomment %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.js"></script>
+<script>
+var xValues ={{dayday}};
+var yValues = {{orderperday}} ;
+var barColors = ["red", "green","blue","orange","brown"];
 
+new Chart("myChart", {
+  type: "bar",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {
+    plugins:{
+        legend: {display: false}
+    },
+   
+    title: {
+      display: true,
+      text: "Order Data"
+    }
+    
+  }
+});
+</script>
 
 
 

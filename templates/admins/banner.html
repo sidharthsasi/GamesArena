@@ -47,10 +47,10 @@
           </div>
       <img src="{{ img.banner_image.url }}"  >
           
-      {% if bnr.is_selected == False %}
-    <a href="{% url 'select_banner' imgr.id %}" class="btn btn-success position-absolute mt-4"style="width:10%;"><b>select</b></a>
+      {% if img.is_selected == False %}
+    <a href="{% url 'select_banner' img.id %}"><button class="btn btn-success position-absolute mt-4"style="width:10%;"><b>Enable</b></button></a>
      {% else %}
-    <a href="{% url 'deselect_banner' img.id %}" class="btn btn-danger position-absolute mt-4"style="width:10%;"><b>deselect </b> <i class="fa fa-check" aria-hidden="true"></i>
+    <a href="{% url 'deselect_banner' img.id %}"><button class="btn btn-danger position-absolute mt-4"style="width:10%;"><b>Disable </b></button> <i class="fa fa-check" aria-hidden="true"></i>
     </a>
     
     {% endif %}

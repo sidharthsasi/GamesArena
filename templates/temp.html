@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>{% block title %}  {% endblock %} </title>
+	<title>Games Arena </title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="{% static 'images/icons/favicon.png' %}"/>
+	<link rel="icon" type="image/png" href="{% static 'images/Games.png' %}"/>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
 <!--===============================================================================================-->
@@ -38,7 +38,7 @@
     
 <!--===============================================================================================-->
 </head>
-<body class="animsition">
+<body id="hey" class="animsition">
 	
 	<!-- Header -->
 	<header class="header-v4">
@@ -59,7 +59,7 @@
 						<a href="{% url 'signout' %}" class="flex-c-m trans-04 p-lr-25">
 							Sign Out</a>
 						{% else %}
-						<a href="accounts/signin/" class="flex-c-m trans-04 p-lr-25">
+						<a href="{% url 'signin' %}" class="flex-c-m trans-04 p-lr-25">
 							Sign In</a>
 						{% endif %}
 
@@ -95,15 +95,15 @@
 							</li>
 
 							<li class="label1" data-label1="new">
-								<a href="shoping-cart.html">Trendings</a>
+								<a href="#">Trendings</a>
 							</li>
 
 							<li>
-								<a href="blog.html">Blog</a>
+								<a href="#">Blog</a>
 							</li>
 
 							<li>
-								<a href="about.html">About</a>
+								<a href="#">About</a>
 							</li>
 
 							<li>
@@ -140,7 +140,7 @@
 		<div class="wrap-header-mobile">
 			<!-- Logo moblie -->		
 			<div class="logo-mobile">
-				<a href="index.html"><img src="{% static 'images/icons/logo-01.png' %}" alt="IMG-LOGO"></a>
+				<a href="index.html"><img src="{% static 'images/Games.png' %}" alt="IMG-LOGO"></a>
 			</div>
 
 			<!-- Icon header -->
@@ -286,6 +286,7 @@
 	</div>
 
     {% block content %}
+    
 
 
 
@@ -712,6 +713,8 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 </script>
 <!--===============================================================================================-->
 <script src="{% static 'js/main.js' %}"></script>
+<script src="https://unpkg.com/htmx.org@1.7.0" ></script>
+
 
 </body>
 </html>

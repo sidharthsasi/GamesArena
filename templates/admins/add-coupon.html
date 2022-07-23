@@ -1,4 +1,4 @@
-{% extends 'tables-basic.html' %}
+{% extends 'admins/tables-basic.html' %}
 
 
 {% block content %}
@@ -34,7 +34,7 @@
     <div class="form-outline mb-4" style="width:60%;">
       <label class="form-label text-dark" for="form3Example4" >offer in percentage (%)</label>
 
-      <input type="number" id="form3Example4" class="form-control" name="discount"  />
+      <input type="number" min="0" id="form3Example4" class="form-control" name="discount"  />
     </div>
 
     <div class="form-outline mb-4" style="width:60%;">

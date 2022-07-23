@@ -254,17 +254,16 @@
 					
 					<div class="block2">
 						<div class="block2-pic hov-img0">
-							<img src="{{product.images.url}}" style="width:250px; height:250px;">
+							<a href="{% url 'productdtl' product.id %}"><img src="{{product.images.url}}" style="width:250px; height:250px;"></a>
 
 
-							<a href="" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 ">
+							{% comment %} <a href="" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 ">
 								Quick View
-							</a>
+							</a> {% endcomment %}
 
-							{% comment %} {% if product.offer_perc > 0 %}
-							<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>-{{ product.offer_perc }}%</span></div>
-							{% endif %} {% endcomment %}
-
+							 {% comment %} {% if product.offer_perc > 0 %}
+							<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>cat offer-{{ product.offer_perc }}%</span></div>
+							{% endif %}  {% endcomment %}
 
 
 						</div>
@@ -281,9 +280,11 @@
 								</span> {% endcomment %}
 
 
-								{% if product.product_offer >= 0 %}
-								<h6 style="color:red;">-{{ product.product_offer}}%</h5>	<h4><small><strike class="text-muted">₹{{product.price}}</strike></small> &nbsp ₹{{product.offer_price}}</h6>	 
+								{% if product.product_offer > 0 %}
+								<h6 style="color:red;">-{{ product.product_offer}}%</h5>	<h4><small><strike class="text-muted">₹{{product.price}}</strike></small> &nbsp ₹{{product.offer_price}}</h6>	
+
 						 		 {% else %}
+								  <h6 style="color:red;">No offer</h5>
 									<span class="mtext-106 cl2">
 									₹{{product.price}}
 									</span>
@@ -324,7 +325,7 @@
 			Load More
 		</a>
 	</div>
-
+</div>
 <br>
 
 	{% endblock %}

@@ -115,7 +115,7 @@ DATABASES = {
         "NAME": "E-commercee",
         "USER": "postgres",
         "PASSWORD": "9889",
-        "HOST" :"gamesarena-database.cez1fzpnbtnp.us-west-1.rds.amazonaws.com"
+        # "HOST" :"gamesarena-database.cez1fzpnbtnp.us-west-1.rds.amazonaws.com"
     }
 }
 
@@ -164,11 +164,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-# STATICFILES_DIRS = [
-#      BASE_DIR / "static"
-#  ]
+STATICFILES_DIRS = [
+     BASE_DIR / "static"
+ ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 MEDIA_URL = '/media/'

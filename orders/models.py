@@ -34,7 +34,7 @@ class order(models.Model):
 
 
     STATUS = (
-        ('Corfirmed','Corfirmed'),
+        ('Confirmed','Confirmed'),
         ('Accepted','Accepted'),
         ('Completed','Completed'),
         ('Cancelled','Cancelled'),

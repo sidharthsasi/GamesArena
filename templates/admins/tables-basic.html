@@ -28,12 +28,12 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>cart</title>
+    <title>Games Arena</title>
 
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{% static 'adminstyle/assets/img/favicon/favicon.ico' %}" />
+    <link rel="icon" type="image/x-icon" href="{% static 'images/Games.png' %}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -97,7 +97,7 @@
 
   </head>
 
-  <body>
+  <body id="hey">
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container">
@@ -276,17 +276,17 @@
 
               <ul class="navbar-nav flex-row align-items-center ms-auto">
                 <!-- Place this tag where you want the button to render. -->
-                <li class="nav-item lh-1 me-3">
+                {% comment %} <li class="nav-item lh-1 me-3">
                   <a
                     class="github-button"
-                    href="https://github.com/themeselection/sneat-html-admin-template-free"
+                    href=""
                     data-icon="octicon-star"
                     data-size="large"
                     data-show-count="true"
                     aria-label="Star themeselection/sneat-html-admin-template-free on GitHub"
                     >Star</a
                   >
-                </li>
+                </li> {% endcomment %}
 
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
@@ -439,7 +439,7 @@
 
     <!-- Template Javascript -->
     <script src="{% static 'admin/js1/main.js' %}"></script>
-
+    <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
 
 
 

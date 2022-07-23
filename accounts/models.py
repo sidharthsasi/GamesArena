@@ -1,4 +1,5 @@
 from distutils.command.upload import upload
+import email
 from pyexpat import model
 from sre_parse import State
 from django.db import models
@@ -10,7 +11,7 @@ from django.utils.html import format_html
 
 # Create your models here.
 class MyAcountManager(BaseUserManager):
-    def create_user(self,first_name,last_name,username,email,password=None):
+    def create_user(self,first_name,last_name,username,email,phone_number,password=None):
         if not email:
             raise ValueError('user must have an email address')
 
@@ -22,19 +23,21 @@ class MyAcountManager(BaseUserManager):
             username = username,
             first_name = first_name,
             last_name = last_name,
+            phone_number=phone_number,
 
         )
 
         user.set_password(password)
         user.save(using=self.db)
         return user
-    def create_superuser(self, first_name, last_name,email,username,password):
+    def create_superuser(self, first_name, last_name,email,username,password,phone_number):
         user = self.create_user(
             email  = self.normalize_email(email),
             username = username,
             password= password,
             first_name= first_name,
             last_name= last_name,
+            phone_number=phone_number,
         )
 
         user.is_admin=True
@@ -91,6 +94,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(Account,on_delete=models.CASCADE)
     first_name = models.CharField(blank=True,max_length=100,null=True)
     last_name = models.CharField(blank=True,max_length=100,null=True)
+    email = models.EmailField(blank=True,max_length=100,null=True)
     address_line_1=models.CharField(blank=True, max_length=100)
     address_line_2=models.CharField(blank=True, max_length=100)
     profile_picture = models.ImageField(blank=True, upload_to='userprofile/')

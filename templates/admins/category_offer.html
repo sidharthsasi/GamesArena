@@ -38,18 +38,19 @@
           <button type="button"  class="btn btn-warning mt-2">Add/Edit Offer</button>
           </a>
         </td>
+        <td>
         <form method="POST" action="category_offr_disable/{{ cats.id }}">
           {% csrf_token %}
-        <td>
+        
          {% if cats.category_offer.active == True  %}
           <button type="submit" class="btn btn-success mt-2 pl-3 px-3">Disable</button>
           {% else %}
           <button type="submit" class="btn btn-danger mt-2">Disabled</button>
           {% endif %}
-          
+        </form>  
         </td>
         
-        </form>
+        
         
        
       </tr>

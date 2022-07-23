@@ -1,7 +1,9 @@
 from math import prod
 from multiprocessing import context
+from operator import imod
 from django.http import HttpResponse
 from django.shortcuts import redirect,render,get_object_or_404 
+from django.contrib.auth.decorators import login_required
 from . models import Cart, CartItemm
 from store.models import Product
 from orders.models import order
@@ -11,6 +13,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from carts.models import Coupon
 from django.http import JsonResponse
+from accounts.models import Wallet
+import json
 
 # Create your views here.
 def _cart_id(request):
@@ -21,17 +25,30 @@ def _cart_id(request):
  
 
 def add_cart(request, product_id):
-
+    print("111")
     product = Product.objects.get(id=product_id)
+    current =request.session.session_key
     print(product_id)
     try:
         cart = Cart.objects.get( cart_id = _cart_id(request))   
+
     except Cart.DoesNotExist: 
-        cart = Cart.objects.create(
-            cart_id = _cart_id(request)
-        )
+        print("222")
+        if request.user.is_authenticated: 
+            cart = Cart.objects.create(
+             cart_id = _cart_id(request),
+             user = request.user.email
+          )
+
+        else:
+            cart = Cart.objects.create(
+                
+                cart_id = _cart_id(request),
+            )
     cart.save()
+
     if request.user.is_authenticated:
+        print("333")
         try:
             cart_item = CartItemm.objects.get(product=product, user=request.user)
             cart_item.quantity +=1
@@ -41,11 +58,22 @@ def add_cart(request, product_id):
                 product = product,
                 quantity = 1,
                 user = request.user,
-                cart = cart
+                cart = cart,
+                
             )
             cart_item.save()
-
-        return redirect('cart')
+        if CartItemm.objects.filter(user = request.user).exists():
+            item =  CartItemm.objects.filter(user = request.user)
+            item.update(cart = cart.id)
+            if Cart.objects.filter(cart_id = current, user= request.user).exists():
+                crt =Cart.objects.get(cart_id = current, user= request.user)
+               
+            
+            if Cart.objects.filter( user= request.user  ).exclude(cart_id = current).exists():
+                crt = Cart.objects.filter( user= request.user  ).exclude(cart_id = current)
+                crt.delete()
+            pass
+        
 
 
     else:
@@ -62,11 +90,12 @@ def add_cart(request, product_id):
             )
             cart_item.save()
 
-        return redirect('cart')
+    return redirect('cart')
+
 
 
 def update_cart(request):
-    print('im here')
+   
     if request.method == 'POST':
         prod_id = int(request.POST.get('product_id'))
         if CartItemm.objects.filter(user=request.user , product_id = prod_id ):
@@ -96,7 +125,7 @@ def remove_cart(request,product_id):
 def remove_cart_item(request,product_id):
     product = get_object_or_404(Product,id=product_id)
     if request.user.is_authenticated:
-        cart_item=CartItemm.objects.get(product=product, user=request.user)
+        cart_item=CartItemm.objects.get (product=product, user=request.user)
     else:
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_item=CartItemm.objects.get(product=product, cart=cart)
@@ -109,69 +138,97 @@ def remove_cart_item(request,product_id):
 def cart(request,total=0,quantity=0,cart_items=None):
 
 
-    grand_total=0
-    try:
-        if request.user.is_authenticated:
-            cart_items = CartItemm.objects.filter( user=request.user)
+    # grand_total=0
+    # try:
+    #     if request.user.is_authenticated:
+    #         cart_items = CartItemm.objects.filter( user=request.user).order_by('product')
 
-        else:
-            cart = Cart.objects.get(cart_id=_cart_id(request))
-            cart_items = CartItemm.objects.filter(cart=cart)
-        for cart_item in cart_items:
-            total += (cart_item.product.price * cart_item.quantity)
-            quantity += cart_item.quantity
-        grand_total = total
+    #     else:
+    #         cart = Cart.objects.get(user = request.user)
+    #         cart_items = CartItemm.objects.filter(cart=cart)
+    #     for cart_item in cart_items:
+    #         total += (cart_item.product.offer_price * cart_item.quantity)
+    #         quantity += cart_item.quantity
+    #     grand_total = grand_total + total
 
-    except ObjectDoesNotExist:
-        pass
+    # except ObjectDoesNotExist:
+    #     pass
 
 
-    if request.method=="POST":
-            name = request.POST['coupon']
-            if len(name) == 0 :
-                name="none" 
-            cart_offer = Cart.objects.filter(carts_id = _cart_id(request))
+    # if request.method=="POST":
+    #         name = request.POST['coupon']
+    #         if len(name) == 0 :
+    #             name="none" 
+    #         cart_offer = Cart.objects.filter(carts_id = _cart_id(request))
             
-            if Coupon.objects.filter(coupon_code = name, active=True).exists():
-                user = request.user
-                coupon = Coupon.objects.get(coupon_code = name)
-                offer = coupon.discount
-                if grand_total > 1500 : 
-                    price = grand_total - (grand_total*offer / 100)
-                    print(grand_total)
-                    cart_items = cart_offer.update(coupon_applied=offer, final_offer_price = price, user=user.email )
-                    print(offer)
+    #         if Coupon.objects.filter(coupon_code = name, active=True).exists():
+    #             user = request.user
+    #             coupon = Coupon.objects.get(coupon_code = name)
+    #             offer = coupon.discount
+    #             if grand_total > 1500 : 
+    #                 price = grand_total - (grand_total*offer / 100)
+    #                 print(grand_total)
+    #                 cart_items = cart_offer.update(coupon_applied=offer, final_offer_price = price, user=user.email )
+    #                 print(offer)
                 
-                    messages.success(request,'Coupon Added Succesfully')
-                else: 
-                    messages.error(request,'Sorry   , Coupon Applicable Only for Order above 1500 ')
-                    context ={ 
-                    'offer' : offer,
-                    'grand_total':grand_total,
-                    'cart_items': cart_items,
-                }
-                return render(request,'carts/cart.html',context)
-            else:
-                messages.error(request,'No Coupon Available')
+    #                 messages.success(request,'Coupon Added Succesfully')
+    #             else: 
+    #                 messages.error(request,'Sorry   , Coupon Applicable Only for Order above 1500 ')
+    #                 context ={ 
+    #                 'offer' : offer,
+    #                 'grand_total':grand_total,
+    #                 'cart_items': cart_items,
+    #             }
+    #             return render(request,'carts/cart.html',context)
+    #         else:
+    #             messages.error(request,'No Coupon Available')
                 
-                context = {
+    #             context = {
                     
-                    'grand_total':grand_total,
-                    'cart_items': cart_items,
-                }
-                return render(request,'carts/cart.html',context)
+    #                 'grand_total':grand_total,
+    #                 'cart_items': cart_items,
+    #             }
+    #             return render(request,'carts/cart.html',context)
 
-    else:
+    # else:
+            
+    #         context = {
+                
+    #             'grand_total':grand_total,
+    #             'cart_items': cart_items,
+    #             'total' : total,
+    #             'quantity' : quantity,
+    #             'cart_items':cart_items,
+    #         }
+
+    if request.user.is_authenticated:
+        
+        cart_items = CartItemm.objects.filter(user=request.user).order_by('product')
+        
+        context = {
+            'cart_items' : cart_items,
+        }
+        return render(request,'carts/cart.html',context)
+    else : 
+
+        try: 
+            carts = Cart.objects.get(carts_id = _cart_id(request))
+            print(carts)
+            
+            carts.save()
+
+            cart_items = CartItemm.objects.filter( cart = carts)
             
             context = {
-                
-                'grand_total':grand_total,
-                'cart_items': cart_items,
-                'total' : total,
-                'quantity' : quantity,
-                'cart_items':cart_items,
-            }
+                'cart_items' : cart_items,
+             }
+
             return render(request,'carts/cart.html',context)
+        except:
+            
+            pass
+
+            return render(request,'carts/cart.html')
 
 
     
@@ -180,7 +237,7 @@ def cart(request,total=0,quantity=0,cart_items=None):
 
 
 def review_cart(request):
-    
+ 
     if request.user.is_authenticated:
         final_price = 0
         carrt = Cart.objects.filter(user = request.user)
@@ -197,9 +254,10 @@ def review_cart(request):
         #     wallet = "0"
             
         print("trouble")
-        if request.method== 'POST':
+        if request.method == 'POST':
             print("something fishy")
             name = request.POST['coupon']
+            print(name)
             if len(name) == 0 :
                 name="none" 
             cart_offer = Cart.objects.filter(cart_id = _cart_id(request))
@@ -252,11 +310,26 @@ def review_cart(request):
             cart = Cart.objects.get(carts_id = _cart_id(request))
             
             print(cart)
-            return render(request,'accounts/login.html',{'cart':cart})
+            return render(request,'accounts/signin.html',{'cart':cart})
         except:
             print("omg")
             
-            return render(request,'accounts/login.html')
+            return render(request,'accounts/signin.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -307,9 +380,9 @@ def offer_check_function(item):
     # }
     # return render(request,'cart.html',context)
 
-
+@login_required()
 def buy_now(request,id):
-    val = request.POST.get("radio_size")
+    
     user = request.user
     if CartItemm.objects.filter(user=user).exists:
         items = CartItemm.objects.filter(user=user)
@@ -326,7 +399,7 @@ def buy_now(request,id):
        
         carts = Cart.objects.create(
            
-            carts_id = _cart_id(request)
+            cart_id = _cart_id(request)
         ) 
     
     carts.save()
@@ -339,7 +412,7 @@ def buy_now(request,id):
                 quantity = 1,
                 cart = carts,
                 user = request.user,
-                size = val,
+                
                 
             )
             cart_item.save()
@@ -350,3 +423,32 @@ def buy_now(request,id):
 
         messages.error(request,'you need to Login !')
         return redirect('login')
+
+
+
+
+def cartadd(request):
+    body = json.loads(request.body)
+    product_id = body['product']
+
+    user = request.user
+    cart = Cart.objects.get(user=user)
+    cartitm = CartItemm.objects.get(cart=cart , product_id = product_id)
+    cartitm.quantity += 1
+    cartitm.save()
+    data = {"quantity":cartitm.quantity,"prod":product_id}
+    return JsonResponse(data)
+
+
+def cartminus(request):
+    body = json.loads(request.body)
+    product_id = body['product']
+
+    user = request.user
+    cart = Cart.objects.get(user=user)
+    cartitm = CartItemm.objects.get(cart=cart , product_id = product_id)
+    if cartitm.quantity > 1:
+        cartitm.quantity -= 1
+        cartitm.save()
+    data = {"quantity":cartitm.quantity,"prod":product_id}
+    return JsonResponse(data)

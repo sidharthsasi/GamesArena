@@ -6,7 +6,7 @@
         <a class="list-group-item {% if wallet in request.path %} active {% endif %}" href="{% url 'wallet' %}">My Wallet</a>
         <a class="list-group-item {% if refrlcod in request.path %} active {% endif %}" href="  {%url 'refrlcod'%}"> Refferal code</a>
         <a class="list-group-item {% if couponshow in request.path %} active {% endif %}" href="  {%url 'couponshow'%}"> Coupon</a>
-        <a class="list-group-item "href="{% url 'edituserprfl' %}">Edit Profile</a>
+        {% comment %} <a class="list-group-item "href="{% url 'edituserprfl' %}">Edit Profile</a> {% endcomment %}
         <a class="list-group-item " href="{% url 'changpswrd'  %}">Change Password</a>
        
     </ul>

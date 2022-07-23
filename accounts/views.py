@@ -27,6 +27,7 @@ from django.contrib.auth.hashers import check_password
 
 from carts.views import _cart_id
 from carts.models import Cart,CartItemm,Coupon
+from django.core.paginator import Paginator,EmptyPage
 
 # Create your views here.
 
@@ -38,11 +39,12 @@ def register(request):
         fname = request.POST.get('fname')
         lname = request.POST.get('lname')
         email = request.POST.get('email')
+        phone = request.POST.get('phone')
         pass1 = request.POST.get('pass1')
         pass2 = request.POST.get('pass2')
 
         myuser = Account.objects.create_user(username=username, email=email, password=pass1, first_name=fname,
-                                          last_name=lname)
+                                          last_name=lname,phone_number=phone)
         
         myuser.save()
 
@@ -88,7 +90,7 @@ def phone_number_verification(request):
                 # Your Account SID twilio
                 account_sid = "AC5a28393fd89fd7b5bb6b7732e04397b0"
                 # Your Auth Token twilio
-                auth_token  = "ff308b49faf51cc807e198011ce687b1"
+                auth_token  = "cc8f637a9e4d925d4706b6bbd47e507d"
 
                 client = Client(account_sid, auth_token)
 
@@ -144,7 +146,7 @@ def otp_verification(request,Phone_number):
 
         otp_input =  request.POST['first']+ request.POST['second']+request.POST['third']+request.POST['fourth']
         account_sid = "AC5a28393fd89fd7b5bb6b7732e04397b0"
-        auth_token = "ff308b49faf51cc807e198011ce687b1"
+        auth_token = "cc8f637a9e4d925d4706b6bbd47e507d"
         client = Client(account_sid, auth_token)
         verification_check = client.verify \
                                 .services("VA8098d010414b64c73f2534d6c8b20771") \
@@ -217,7 +219,7 @@ def loginotp(request):
             #  Account SID twilio
             account_sid = "AC5a28393fd89fd7b5bb6b7732e04397b0"
             #  Auth Token twilio    
-            auth_token  = "ff308b49faf51cc807e198011ce687b1"
+            auth_token  = "cc8f637a9e4d925d4706b6bbd47e507d"
 
             client = Client(account_sid, auth_token)
             global otp
@@ -232,7 +234,7 @@ def loginotp(request):
         else:
             
             messages.info(request,'invalid mobile number ! !')
-            return render (request, 'otplogin.html')
+            return render (request, 'accounts/otplogin.html')
     
     return render (request,'accounts/otplogin.html')
 
@@ -306,6 +308,7 @@ def userprfl(request):
         prfl = UserProfile()
         prfl.first_name=request.POST.get('fname')
         prfl.last_name=request.POST.get('lname')
+        prfl.email=request.POST.get('email')
         prfl.address_line_1 = request.POST.get('addres_line_1')
         prfl.address_line_2 = request.POST.get('addres_line_2')
         prfl.city = request.POST.get('city')
@@ -321,12 +324,35 @@ def userprfl(request):
 
 def myordr(request):
     print('hoiiiii')
-    ordr=order.objects.all()
+    ordr=order.objects.all().order_by('-created_at')
     item = CartItemm.objects.filter(user=request.user)
+
+    p=Paginator(ordr,15)
+    print('Number of pages')
+    print(p.num_pages)
+
+    page_num = request.GET.get('page',1)
+
+    try:
+
+         page = p.page(page_num)
+    except EmptyPage:
+         page = p.page(1)
+   
+
+
     context={
-        'ordr' : ordr,
+        'ordr' : page,
         'item' : item
     }
+
+
+
+
+    
+
+
+
 
     return render(request,'accounts/myorders.html',context)
   
@@ -382,9 +408,9 @@ def edituserprfl(request):
     # prfl = Account.objects.get(email=request.user)
     print(user)
     # print(prfl)
-    val=request.POST.get("selection")
+    # val=request.POST.get("selection")
   
-    print(val)
+    # print(val)
     if request.method == 'POST':
         print("12324")
        
@@ -403,7 +429,7 @@ def edituserprfl(request):
         user.State = state
         user.country = country
         # prfl.save()
-        user.save()
+        user.update()
         return redirect(dashboard)
     else:
         user = UserProfile.objects.filter(user = request.user)
@@ -433,43 +459,24 @@ def changpswrd(request):
         pswrd = user.check_password(oldpswrd)
         print(len(newpswrd),newpswrd)
 
-        if newpswrd != confrmpswrd:
-            print("111")
-            messages.error(request,"password doesn't match")
-        elif pswrd:
-            print("22222")
-            user.set_password(newpswrd)
-            user.save()
-            messages.success(request,'Password changed successfull')
+        if newpswrd == confrmpswrd:
+            if pswrd:
+                print("111")
+                user.set_password(newpswrd)
+                user.save()
+                messages.success(request,'Password changed successfully')
+                return redirect('dashboard')
+
+            else:
+                messages.error(request,"password doesnt exist !")
+                return redirect('changpswrd')
         else:
-            print("3333")
-            messages.error(request,"pswrd dsnt match")
-        print(pswrd)
-       
-        return redirect(dashboard)
-    
+                messages.error(request,"password doesnt match !")
+                return redirect('changpswrd')
     return render(request,'accounts/pswrdchange.html')
 
-    # def account(request,id):
-    # user = Accounts.objects.get(id=id)
-    # if request.method == 'POST':
-    #     old_password = request.POST.get('old_password')
-    #     password = request.POST.get('password')
-    #     confirm_password = request.POST.get('confirm_password')
-    #     a = user.check_password(old_password)
-    #     print(len(password),password)
-    #     if a:
-    #         user.set_password(password)
-    #         user.save()
-    #         print(user.check_password(old_password))
-    #     elif password == confirm_password:
-    #         print('reached2')
-    #         messages.error(request, "password doesn't match")
-    #     else:
-    #         print('match')
-    #         messages.error(request,"paswords doesn't match")
-    # return render(request,'user_profile/account_settings.html')
-        
+
+
 
 
 def deleteaddress(request,id):
@@ -508,6 +515,7 @@ def order_view(request,id):
             'order_items':order_items,
             'orders':orders
         }
+
 
         return render(request,'orders/order_view_list.html',context)
     else :

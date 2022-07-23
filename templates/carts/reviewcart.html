@@ -27,7 +27,7 @@
 	<!-- Shoping Cart -->
 
 
-	<form class="bg0 p-t-75 p-b-85">
+	<div class="bg0 p-t-75 p-b-85">
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
@@ -336,14 +336,16 @@
            
             <div class="card ">
               <div class="card-body">
-                  <form method="POST" action="{% url 'review_cart' %}">
+                  <form method='POST' action="{% url 'review_cart' %}" >
                     {% csrf_token %}
-                      <div class="form-group"> <label>Have coupon?</label>
+                      <div class="form-group"> 
+						<label>Have coupon?</label>
                           <div class="input-group"> 
                             <input type="text" class="form-control coupon" name="coupon" placeholder="Coupon code">
                              <span class="input-group-append">
                                 <button type="submit" class="bt1n btn-success btn-apply coupon px-3 pl-3 p-2" >Apply</button> 
-                              </span> </div>
+                              </span> 
+							</div>
                       </div>
                   </form>
               </div>
